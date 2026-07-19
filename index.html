@@ -3,90 +3,6 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>LunexChat - Etusivu</title>
-    <style>
-        body {
-            background: linear-gradient(135deg, #0f0c1b 0%, #16122c 50%, #050409 100%);
-            color: #f1f1f7;
-            font-family: 'Segoe UI', Roboto, sans-serif;
-            margin: 0;
-            padding: 0;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-        }
-
-        .main-wrapper {
-            width: 90%;
-            max-width: 800px;
-            background: rgba(25, 20, 45, 0.65);
-            border: 1px solid rgba(255, 255, 255, 0.08);
-            border-radius: 24px;
-            padding: 40px 30px;
-            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
-            backdrop-filter: blur(12px);
-            text-align: center;
-        }
-
-        .logo {
-            font-size: 1.6rem;
-            font-weight: 800;
-            background: linear-gradient(45deg, #00ff87 0%, #60efff 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            margin-bottom: 20px;
-        }
-
-        .hero-title {
-            font-size: 3rem;
-            font-weight: 800;
-            margin-bottom: 15px;
-            background: linear-gradient(180deg, #ffffff 0%, #b5b5c8 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
-
-        .hero-subtitle {
-            font-size: 1.2rem;
-            color: #a09cb1;
-            margin-bottom: 40px;
-            line-height: 1.6;
-        }
-
-        .cta-button {
-            background: linear-gradient(135deg, #00cd52 0%, #00ff68 100%);
-            color: #050409;
-            border: none;
-            padding: 16px 50px;
-            font-size: 1.2rem;
-            font-weight: 700;
-            border-radius: 50px;
-            cursor: pointer;
-            box-shadow: 0 8px 25px rgba(0, 205, 82, 0.3);
-            transition: all 0.3s ease;
-        }
-
-        .cta-button:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 12px 30px rgba(0, 205, 82, 0.5);
-        }
-    </style>
-</head>
-<body>
-
-<div class="main-wrapper">
-    <div class="logo">🎵 LunexChat Peli</div>
-    <h1 class="hero-title">Tervetuloa Pelaamaan</h1>
-    <p class="hero-subtitle">Väistä punaisia esteitä ja kerää mahdollisimman korkeat pisteet!</p>
-    
-    <button class="cta-button" onclick="location.href='peli.html'">Aloita</button>
-</div>
-<!DOCTYPE html>
-<html lang="fi">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>LunexChat - All-in-One Hub</title>
     <style>
         body {
@@ -110,7 +26,7 @@
             gap: 25px;
         }
 
-        /* Yhteinen laatikoiden tyyli (Glassmorphism) */
+        /* Yhteinen laatikoiden tyyli */
         .box {
             background: rgba(25, 20, 45, 0.65);
             border: 1px solid rgba(255, 255, 255, 0.08);
@@ -233,6 +149,30 @@
         
         .fb-list { height: 110px; overflow-y: auto; background: rgba(0,0,0,0.2); padding: 8px; border-radius: 10px; margin-top: 10px; font-size: 0.85rem; }
         .fb-item { border-bottom: 1px solid rgba(255,255,255,0.05); padding: 4px 0; }
+
+        /* TEKIJÄT OSIO */
+        .credits-list {
+            display: flex;
+            justify-content: center;
+            gap: 40px;
+            margin-top: 15px;
+        }
+        .credit-card {
+            background: rgba(0, 0, 0, 0.2);
+            padding: 15px 25px;
+            border-radius: 15px;
+            border: 1px solid rgba(96, 239, 255, 0.2);
+        }
+        .credit-name {
+            font-weight: bold;
+            font-size: 1.1rem;
+            color: #00ff87;
+        }
+        .credit-role {
+            font-size: 0.85rem;
+            color: #a09cb1;
+            margin-top: 5px;
+        }
     </style>
 </head>
 <body>
@@ -258,7 +198,6 @@
 
     <div class="box">
         <div class="chat-feedback-grid">
-            
             <div>
                 <h3>💬 Live-Chat</h3>
                 <div class="messages-box" id="chat-messages"></div>
@@ -267,7 +206,6 @@
                     <button class="btn-send" id="send-btn">></button>
                 </div>
             </div>
-
             <div>
                 <h3>✍️ Sivun Palaute</h3>
                 <div style="display:flex; flex-direction:column; gap:8px;">
@@ -277,14 +215,22 @@
                 </div>
                 <div class="fb-list" id="fb-messages"></div>
             </div>
-
         </div>
+    </div>
+
+    <div class="box">
+        <h3>👥 Sivuston Tekijät</h3>
+        <div class="credits-list">
+            <div class="credit-card">
+                <div class="credit-name">Veikka Lehtonen</div>
+                <div class="credit-role">Pääkehittäjä & Ylläpitäjä</div>
+            </div>
+            </div>
     </div>
 
 </div>
 
 <script>
-    // Kysytään nimimerkki kerran
     const myName = prompt("Mikä on nimimerkkisi chättiä varten?") || "Käyttäjä";
 
     // --- CHAT LOGIIKKA ---
@@ -316,7 +262,7 @@
     sendBtn.addEventListener('click', sendMessage);
     msgInput.addEventListener('keypress', (e) => { if (e.key === 'Enter') sendMessage(); });
 
-    // --- PAIKALLINEN PALAUTE LOGIIKKA ---
+    // --- PALAUTE LOGIIKKA ---
     const fbNameInput = document.getElementById('fb-name');
     const fbTextInput = document.getElementById('fb-text');
     const fbBtn = document.getElementById('fb-btn');
@@ -407,12 +353,9 @@
 
     canvas.addEventListener("click", () => { if (gameOver && gameActive) { enemies = []; score = 0; enemySpeed = 3; scoreDisplay.innerText = score; gameOver = false; gameLoop(); } });
 
-    // Alustukset
     renderMessages();
     renderFeedback();
 </script>
 
-</body>
-</html>
 </body>
 </html>
