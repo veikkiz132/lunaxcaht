@@ -1,19 +1,18 @@
 # 👻 LunaXChat
 
-LunaXChat on reaaliaikainen chättisovellus, joka on rakennettu HTML-, CSS- ja JavaScript-kielellä. Sovelluksen tietoliikenteestä ja viestien reaaliaikaisesta välityksestä huolehtii **Google Firebase Realtime Database**, ja se on julkaistu nettiin **GitHub Pagesin** avulla.
+LunaXChat on itsenäinen ja tyylikäs chättisovellus, joka on rakennettu HTML-, CSS- ja JavaScript-kielellä. Sovellus toimii täysin ilman ulkopuolisia palvelimia, ja se on julkaistu nettiin **GitHub Pagesin** avulla.
 
 ## ✨ Ominaisuudet
-* **Reaaliaikainen viestintä:** Viestit ilmestyvät chättiruutuun välittömästi ilman sivun päivittämistä.
+* **Paikallinen tallennus:** Viestit tallentuvat suoraan selaimesi muistiin (LocalStorage), joten ne pysyvät tallessa, vaikka päivität sivun.
 * **Kustomoitu ulkoasu:** Snappi-henkinen keltainen ja selkeä teema chätille.
-* **Nimimerkit:** Sovellus kysyy käyttäjältä nimimerkin ennen chättiinksen liittymistä.
+* **Nimimerkit:** Sovellus kysyy käyttäjältä nimimerkin ennen chättiin liittymistä.
 
 ## 🚀 Teknologiat
 * HTML5 & CSS3
-* JavaScript (ES6+ / Musiikkimoduulit)
-* [Firebase Realtime Database](https://firebase.google.com/)
+* JavaScript (ES6+ / LocalStorage)
 * [GitHub Pages](https://pages.github.com/)
 
 ## 🛠️ Miten tämä tehtiin?
 1. Luotiin staattinen nettisivu ja julkaistiin se GitHub Pagesin kautta.
-2. Perustettiin Firebase-projekti ja otettiin käyttöön *Realtime Database* testimodessa.
-3. Yhdistettiin Firebase-tunnukset (`firebaseConfig`) osaksi sovelluksen JavaScript-koodia.
+2. Koodattiin JavaScriptillä viestien tallennus selaimen omaan muistiin, jotta sovellus toimii itsenäisesti ilman kolmannen osapuolen tietokantoja.
+3. 
