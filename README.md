@@ -15,4 +15,3 @@ LunaXChat on itsenäinen ja tyylikäs chättisovellus, joka on rakennettu HTML-,
 ## 🛠️ Miten tämä tehtiin?
 1. Luotiin staattinen nettisivu ja julkaistiin se GitHub Pagesin kautta.
 2. Koodattiin JavaScriptillä viestien tallennus selaimen omaan muistiin, jotta sovellus toimii itsenäisesti ilman kolmannen osapuolen tietokantoja.
-3. 
