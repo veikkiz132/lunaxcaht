@@ -5,4 +5,4 @@ LunexChat on moderni ja itsenäinen alusta musiikin kuunteluun ja chattailuun. S
 ## ✨ Ominaisuudet
 * **Cyberpunk-teema:** Tyylikäs tumma käyttöliittymä liukuväreillä.
 * **Paikallinen chätti:** Viestit tallentuvat selaimen muistiin (LocalStorage).
-* **Palvelinvapaa:** Ei Firebasea tai muita ulkopuolisia tietokantoja.
+* **Palvelinvapaa:** juttele tulevaisuudessa kavereillesi.
