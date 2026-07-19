@@ -82,6 +82,337 @@
     
     <button class="cta-button" onclick="location.href='peli.html'">Aloita</button>
 </div>
+<!DOCTYPE html>
+<html lang="fi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LunexChat - All-in-One Hub</title>
+    <style>
+        body {
+            background: linear-gradient(135deg, #0f0c1b 0%, #16122c 50%, #050409 100%);
+            color: #f1f1f7;
+            font-family: 'Segoe UI', Roboto, sans-serif;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+            box-sizing: border-box;
+        }
 
+        .main-container {
+            width: 100%;
+            max-width: 800px;
+            display: flex;
+            flex-direction: column;
+            gap: 25px;
+        }
+
+        /* Yhteinen laatikoiden tyyli (Glassmorphism) */
+        .box {
+            background: rgba(25, 20, 45, 0.65);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 24px;
+            padding: 30px;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.4);
+            backdrop-filter: blur(12px);
+            text-align: center;
+        }
+
+        .logo {
+            font-size: 1.6rem;
+            font-weight: 800;
+            background: linear-gradient(45deg, #00ff87 0%, #60efff 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 20px;
+        }
+
+        .hero-title {
+            font-size: 2.5rem;
+            font-weight: 800;
+            margin-bottom: 15px;
+            background: linear-gradient(180deg, #ffffff 0%, #b5b5c8 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .hero-subtitle {
+            color: #a09cb1;
+            margin-bottom: 30px;
+        }
+
+        .button-group {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            align-items: center;
+        }
+
+        .btn {
+            border: none;
+            padding: 14px 40px;
+            font-size: 1.1rem;
+            font-weight: 700;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            width: 80%;
+            max-width: 320px;
+            text-decoration: none;
+            display: inline-block;
+            box-sizing: border-box;
+        }
+
+        .btn-game { background: linear-gradient(135deg, #00cd52, #00ff68); color: #050409; }
+        .btn-mail { background: linear-gradient(135deg, #00bfff, #60efff); color: #050409; }
+        .btn-game:hover, .btn-mail:hover { transform: translateY(-2px); box-shadow: 0 10px 20px rgba(255,255,255,0.1); }
+
+        /* PELIRUUTU */
+        #game-screen { display: none; flex-direction: column; align-items: center; }
+        #gameCanvas {
+            background: #16122c;
+            border: 4px solid #60efff;
+            border-radius: 10px;
+            cursor: none;
+            max-width: 100%;
+        }
+        .ui { font-size: 1.5rem; font-weight: bold; margin-bottom: 10px; color: #60efff; }
+
+        /* CHAT JA PALAUTE ALASIVU */
+        .chat-feedback-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            text-align: left;
+        }
+
+        @media (max-width: 650px) {
+            .chat-feedback-grid { grid-template-columns: 1fr; }
+        }
+
+        h3 {
+            margin-top: 0;
+            color: #60efff;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+            padding-bottom: 8px;
+        }
+
+        .messages-box {
+            height: 200px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            margin-bottom: 10px;
+            background: rgba(0,0,0,0.2);
+            padding: 10px;
+            border-radius: 10px;
+        }
+
+        .msg { padding: 8px 12px; border-radius: 12px; max-width: 85%; word-break: break-word; font-size: 0.9rem; }
+        .msg.sent { background: #00cd52; color: #050409; align-self: flex-end; }
+        .msg.received { background: rgba(255,255,255,0.1); color: white; align-self: flex-start; }
+        .msg-user { font-size: 0.7rem; font-weight: bold; opacity: 0.7; }
+
+        .input-row { display: flex; gap: 8px; }
+        input, textarea {
+            flex: 1;
+            padding: 10px;
+            background: rgba(0,0,0,0.3);
+            border: 1px solid rgba(255,255,255,0.15);
+            border-radius: 8px;
+            color: white;
+            outline: none;
+        }
+        input:focus, textarea:focus { border-color: #60efff; }
+
+        .btn-send { background: #60efff; color: black; border: none; border-radius: 8px; padding: 0 15px; font-weight: bold; cursor: pointer; }
+        
+        .fb-list { height: 110px; overflow-y: auto; background: rgba(0,0,0,0.2); padding: 8px; border-radius: 10px; margin-top: 10px; font-size: 0.85rem; }
+        .fb-item { border-bottom: 1px solid rgba(255,255,255,0.05); padding: 4px 0; }
+    </style>
+</head>
+<body>
+
+<div class="main-container">
+
+    <div class="box" id="menu-screen">
+        <div class="logo">🎵 LunexChat Hub</div>
+        <h1 class="hero-title">Tervetuloa</h1>
+        <p class="hero-subtitle">Pelaa alta tai käytä chattia sivun alalaidassa!</p>
+        
+        <div class="button-group">
+            <button class="btn btn-game" onclick="startGame()">Aloita peli</button>
+            <a class="btn btn-mail" href="mailto:veikkalehtonen754@gmail.com?subject=Palaute&body=Hei ylläpito...">Yhteys ylläpitoon (Sähköposti)</a>
+        </div>
+    </div>
+
+    <div class="box" id="game-screen">
+        <div class="ui">Pisteet: <span id="score">0</span></div>
+        <canvas id="gameCanvas" width="400" height="400"></canvas>
+        <button class="btn btn-mail" style="margin-top: 15px; width: auto;" onclick="stopGame()">Lopeta peli</button>
+    </div>
+
+    <div class="box">
+        <div class="chat-feedback-grid">
+            
+            <div>
+                <h3>💬 Live-Chat</h3>
+                <div class="messages-box" id="chat-messages"></div>
+                <div class="input-row">
+                    <input type="text" id="msg-input" placeholder="Kirjoita viesti...">
+                    <button class="btn-send" id="send-btn">></button>
+                </div>
+            </div>
+
+            <div>
+                <h3>✍️ Sivun Palaute</h3>
+                <div style="display:flex; flex-direction:column; gap:8px;">
+                    <input type="text" id="fb-name" placeholder="Nimesi">
+                    <input type="text" id="fb-text" placeholder="Kirjoita palaute tähän...">
+                    <button class="btn-send" id="fb-btn" style="padding:8px;">Tallenna palaute</button>
+                </div>
+                <div class="fb-list" id="fb-messages"></div>
+            </div>
+
+        </div>
+    </div>
+
+</div>
+
+<script>
+    // Kysytään nimimerkki kerran
+    const myName = prompt("Mikä on nimimerkkisi chättiä varten?") || "Käyttäjä";
+
+    // --- CHAT LOGIIKKA ---
+    const msgInput = document.getElementById('msg-input');
+    const sendBtn = document.getElementById('send-btn');
+    const chatMessages = document.getElementById('chat-messages');
+    let localMessages = JSON.parse(localStorage.getItem('lunax_messages')) || [];
+
+    function renderMessages() {
+        chatMessages.innerHTML = '';
+        localMessages.forEach(data => {
+            const msgDiv = document.createElement('div');
+            msgDiv.classList.add('msg', data.username === myName ? 'sent' : 'received');
+            msgDiv.innerHTML = `<div class="msg-user">${data.username}</div><div>${data.message}</div>`;
+            chatMessages.appendChild(msgDiv);
+        });
+        chatMessages.scrollTop = chatMessages.scrollHeight;
+    }
+
+    function sendMessage() {
+        const text = msgInput.value.trim();
+        if (text !== "") {
+            localMessages.push({ username: myName, message: text });
+            localStorage.setItem('lunax_messages', JSON.stringify(localMessages));
+            renderMessages();
+            msgInput.value = "";
+        }
+    }
+    sendBtn.addEventListener('click', sendMessage);
+    msgInput.addEventListener('keypress', (e) => { if (e.key === 'Enter') sendMessage(); });
+
+    // --- PAIKALLINEN PALAUTE LOGIIKKA ---
+    const fbNameInput = document.getElementById('fb-name');
+    const fbTextInput = document.getElementById('fb-text');
+    const fbBtn = document.getElementById('fb-btn');
+    const fbMessages = document.getElementById('fb-messages');
+    let localFeedback = JSON.parse(localStorage.getItem('lunax_feedback')) || [];
+
+    function renderFeedback() {
+        fbMessages.innerHTML = '';
+        localFeedback.forEach(fb => {
+            const div = document.createElement('div');
+            div.classList.add('fb-item');
+            div.innerHTML = `<strong>${fb.name}:</strong> ${fb.text}`;
+            fbMessages.appendChild(div);
+        });
+    }
+
+    fbBtn.addEventListener('click', () => {
+        const name = fbNameInput.value.trim() || "Anonyymi";
+        const text = fbTextInput.value.trim();
+        if (text !== "") {
+            localFeedback.push({ name: name, text: text });
+            localStorage.setItem('lunax_feedback', JSON.stringify(localFeedback));
+            renderFeedback();
+            fbTextInput.value = "";
+        }
+    });
+
+    // --- PELI LOGIIKKA ---
+    const menuScreen = document.getElementById("menu-screen");
+    const gameScreen = document.getElementById("game-screen");
+    const canvas = document.getElementById("gameCanvas");
+    const ctx = canvas.getContext("2d");
+    const scoreDisplay = document.getElementById("score");
+
+    let score = 0, gameOver = false, gameActive = false, animationId;
+    const player = { x: 180, y: 350, width: 40, height: 40, color: "#00ff87" };
+    let enemies = [], enemySpeed = 3, spawnRate = 0.02;
+
+    canvas.addEventListener("mousemove", (e) => {
+        if (!gameActive) return;
+        const rect = canvas.getBoundingClientRect();
+        player.x = (e.clientX - rect.left) * (canvas.width / rect.width) - player.width / 2;
+        if (player.x < 0) player.x = 0;
+        if (player.x > canvas.width - player.width) player.x = canvas.width - player.width;
+    });
+
+    function startGame() {
+        menuScreen.style.display = "none";
+        gameScreen.style.display = "flex";
+        gameActive = true;
+        enemies = []; score = 0; enemySpeed = 3; gameOver = false;
+        scoreDisplay.innerText = score;
+        gameLoop();
+    }
+
+    function stopGame() {
+        gameActive = false;
+        cancelAnimationFrame(animationId);
+        gameScreen.style.display = "none";
+        menuScreen.style.display = "block";
+    }
+
+    function gameLoop() {
+        if (!gameActive) return;
+        if (!gameOver) {
+            if (Math.random() < spawnRate) {
+                let size = Math.random() * 20 + 20;
+                enemies.push({ x: Math.random() * (canvas.width - size), y: -size, width: size, height: size, color: "#ff0055", speed: enemySpeed + Math.random() * 2 });
+            }
+            for (let i = enemies.length - 1; i >= 0; i--) {
+                enemies[i].y += enemies[i].speed;
+                if (player.x < enemies[i].x + enemies[i].width && player.x + player.width > enemies[i].x && player.y < enemies[i].y + enemies[i].height && player.y + player.height > enemies[i].y) gameOver = true;
+                if (enemies[i].y > canvas.height) {
+                    enemies.splice(i, 1); score++; scoreDisplay.innerText = score;
+                    if (score % 10 === 0) { enemySpeed += 0.5; spawnRate += 0.005; }
+                }
+            }
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            ctx.fillStyle = player.color; ctx.fillRect(player.x, player.y, player.width, player.height);
+            enemies.forEach(e => { ctx.fillStyle = e.color; ctx.fillRect(e.x, e.y, e.width, e.height); });
+            animationId = requestAnimationFrame(gameLoop);
+        } else {
+            ctx.fillStyle = "rgba(0,0,0,0.8)"; ctx.fillRect(0, 0, canvas.width, canvas.height);
+            ctx.fillStyle = "#ff0055"; ctx.font = "24px sans-serif"; ctx.fillText("GAME OVER", 130, 180);
+            ctx.fillStyle = "#60efff"; ctx.font = "16px sans-serif"; ctx.fillText("Klikkaa ruutua aloittaaksesi alusta", 80, 230);
+        }
+    }
+
+    canvas.addEventListener("click", () => { if (gameOver && gameActive) { enemies = []; score = 0; enemySpeed = 3; scoreDisplay.innerText = score; gameOver = false; gameLoop(); } });
+
+    // Alustukset
+    renderMessages();
+    renderFeedback();
+</script>
+
+</body>
+</html>
 </body>
 </html>
