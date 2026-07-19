@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html lang="fi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LunexChat Peli</title>
+    <style>
+        /* Yhteiset tyylit ja Cyberpunk-tausta */
+        body {
+            background: linear-gradient(135deg, #0f0c1b 0%, #16122c 50%, #050409 100%);
+            color: #f1f1f7;
+            font-family: 'Segoe UI', Roboto, sans-serif;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            overflow: hidden;
+        }
+
+        /* Etusivun wrapperi */
+        .main-wrapper {
+            width: 90%;
+            max-width: 600px;
+            background: rgba(25, 20, 45, 0.65);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 24px;
+            padding: 40px 30px;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(12px);
+            text-align: center;
+            transition: opacity 0.5s ease;
+        }
+
+        .logo {
+            font-size: 1.6rem;
+            font-weight: 800;
+            background: linear-gradient(45deg, #00ff87 0%, #60efff 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 20px;
+        }
+
+        .hero-title {
+            font-size: 3rem;
+            font-weight: 800;
+            margin-bottom: 15px;
+            background: linear-gradient(180deg, #ffffff 0%, #b5b5c8 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .hero-subtitle {
+            font-size: 1.2rem;
+            color: #a09cb1;
+            margin-bottom: 40px;
+            line-height: 1.6;
+        }
+
+        .cta-button, .back-button {
+            background: linear-gradient(135deg, #00cd52 0%, #00ff68 100%);
+            color: #050409;
+            border: none;
+            padding: 16px 50px;
+            font-size: 1.2rem;
+            font-weight: 700;
+            border-radius: 50px;
+            cursor: pointer;
+            box-shadow: 0 8px 25px rgba(0, 205, 82, 0.3);
+            transition: all 0.3s ease;
+        }
+
+        .cta-button:hover, .back-button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 12px 30px rgba(0, 205, 82, 0.5);
+        }
+
+        /* Peliruudun tyylit (alussa piilotettu) */
+        #game-container {
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+        }
+
+        #gameCanvas {
+            background: #16122c;
+            border: 4px solid #60efff;
+            border-radius: 10px;
+            box-shadow: 0 0 20px rgba(96, 239, 255, 0.3);
+            cursor: none;
+            max-width: 100%;
+        }
+
+        .ui {
+            margin-bottom: 15px;
+            font-size: 1.8rem;
+            font-weight: bold;
+            background: linear-gradient(45deg, #60efff, #00ff87);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .back-button {
+            margin-top: 15px;
+            padding: 10px 30px;
+            font-size: 1rem;
+        }
+    </style>
+</head>
+<body>
+
+<div class="main-wrapper" id="menu-screen">
+    <div class="logo">🎵 LunexChat Peli</div>
+    <h1 class="hero-title">Tervetuloa Pelaamaan</h1>
+    <p class="hero-subtitle">Väistä punaisia esteitä ja kerää mahdollisimman korkeat pisteet!</p>
+    <button class="cta-button" onclick="startGame()">Aloita</button>
+</div>
+
+<div id="game-container">
+    <div class="ui">Pisteet: <span id="score">0</span></div>
+    <canvas id="gameCanvas" width="400" height="500"></canvas>
+    <button class="back-button" onclick="stopGame()">Lopeta peli</button>
+</div>
+
+<script>
+    const menuScreen = document.getElementById("menu-screen");
+    const gameContainer = document.getElementById("game-container");
+    const canvas = document.getElementById("gameCanvas");
+    const ctx = canvas.getContext("2d");
+    const scoreDisplay = document.getElementById("score");
+
+    let score = 0;
+    let gameOver = false;
+    let gameActive = false;
+    let animationId;
+
+    // Pelaaja (vihreä palikka)
+    const player = {
+        x: 180,
+        y: 440,
+        width: 40,
+        height: 40,
+        color: "#00ff87"
+    };
+
+    let enemies = [];
+    let enemySpeed = 3;
+    let spawnRate = 0.02;
+
+    // Seurataan hiirtä tai sormea pelialueella
+    canvas.addEventListener("mousemove", (e) => {
+        if (!gameActive) return;
+        const rect = canvas.getBoundingClientRect();
+        player.x = (e.clientX - rect.left) * (canvas.width / rect.width) - player.width / 2;
+        
+        if (player.x < 0) player.x = 0;
+        if (player.x > canvas.width - player.width) player.x = canvas.width - player.width;
+    });
+
+    // Kosketusnäyttötuki puhelimille
+    canvas.addEventListener("touchmove", (e) => {
+        if (!gameActive) return;
+        const rect = canvas.getBoundingClientRect();
+        const touch = e.touches[0];
+        player.x = (touch.clientX - rect.left) * (canvas.width / rect.width) - player.width / 2;
+        
+        if (player.x < 0) player.x = 0;
+        if (player.x > canvas.width - player.width) player.x = canvas.width - player.width;
+        e.preventDefault();
+    }, { passive: false });
+
+    function startGame() {
+        menuScreen.style.display = "none";
+        gameContainer.style.display = "flex";
+        gameActive = true;
+        resetGame();
+        gameLoop();
+    }
+
+    function stopGame() {
+        gameActive = false;
+        cancelAnimationFrame(animationId);
+        gameContainer.style.display = "none";
+        menuScreen.style.display = "block";
+    }
+
+    function resetGame() {
+        enemies = [];
+        score = 0;
+        enemySpeed = 3;
+        spawnRate = 0.02;
+        scoreDisplay.innerText = score;
+        gameOver = false;
+    }
+
+    function spawnEnemy() {
+        if (Math.random() < spawnRate) {
+            let size = Math.random() * 30 + 20;
+            enemies.push({
+                x: Math.random() * (canvas.width - size),
+                y: -size,
+                width: size,
+                height: size,
+                color: "#ff0055",
+                speed: enemySpeed + Math.random() * 2
+            });
+        }
+    }
+
+    function updateEnemies() {
+        for (let i = enemies.length - 1; i >= 0; i--) {
+            enemies[i].y += enemies[i].speed;
+
+            // Törmäystarkistus
+            if (
+                player.x < enemies[i].x + enemies[i].width &&
+                player.x + player.width > enemies[i].x &&
+                player.y < enemies[i].y + enemies[i].height &&
+                player.y + player.height > enemies[i].y
+            ) {
+                gameOver = true;
+            }
+
+            // Ohi menneet
+            if (enemies[i].y > canvas.height) {
+                enemies.splice(i, 1);
+                score++;
+                scoreDisplay.innerText = score;
+
+                if (score % 10 === 0) {
+                    enemySpeed += 0.5;
+                    spawnRate += 0.005;
+                }
+            }
+        }
+    }
+
+    function draw() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+        // Pelaaja
+        ctx.fillStyle = player.color;
+        ctx.shadowBlur = 15;
+        ctx.shadowColor = player.color;
+        ctx.fillRect(player.x, player.y, player.width, player.height);
+
+        // Esteet
+        enemies.forEach(enemy => {
+            ctx.fillStyle = enemy.color;
+            ctx.shadowColor = enemy.color;
+            ctx.fillRect(enemy.x, enemy.y, enemy.width, enemy.height);
+        });
+
+        ctx.shadowBlur = 0;
+    }
+
+    function gameLoop() {
+        if (!gameActive) return;
+
+        if (!gameOver) {
+            spawnEnemy();
+            updateEnemies();
+            draw();
+            animationId = requestAnimationFrame(gameLoop);
+        } else {
+            ctx.fillStyle = "rgba(0, 0, 0, 0.85)";
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            
+            ctx.fillStyle = "#ff0055";
+            ctx.font = "bold 30px sans-serif";
+            ctx.fillText("GAME OVER", 110, 220);
+            
+            ctx.fillStyle = "#60efff";
+            ctx.font = "18px sans-serif";
+            ctx.fillText("Klikkaa ruutua aloittaaksesi alusta", 65, 270);
+        }
+    }
+
+    canvas.addEventListener("click", () => {
+        if (gameOver && gameActive) {
+            resetGame();
+            gameLoop();
+        }
+    });
+</script>
+
+</body>
+</html>
